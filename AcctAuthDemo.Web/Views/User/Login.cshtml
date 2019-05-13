@@ -1,0 +1,68 @@
+﻿
+@{
+    ViewData["Title"] = "登录";
+}
+
+<h2>登录</h2>
+
+<div class="wrap-p50">
+
+    <div class="form-group">
+        <input class="form-control" id="name" name="name" type="text" placeholder="用户名" />
+    </div>
+
+    <div class="form-group">
+        <input class="form-control" id="password" name="password" type="password" placeholder="密码" />
+    </div>
+
+    <div class="form-group">
+        <button class="btn btn-default a-disabled" id="login" disabled>登录</button>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(function () {
+            loginLst();
+        });
+
+        function loginLst() {
+            $('#login').click(function () {
+                var deviceInfo = px.device.getDeviceInfo();
+                $.ajax({
+                    url: '@Url.Action("Login")',
+                    type: 'post',
+                    data: {
+                        name: $('#name').val(),
+                        password: $('#password').val(),
+                        deviceId: deviceInfo.id,
+                        deviceName: deviceInfo.name,
+                    },
+                    headers: {
+                        reCapToken: $('#reCapToken').val(),
+                    },
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $(this).attr('disabled', true).addClass('a-disabled');
+                        $(this).addClass('a-disabled');
+                    },
+                    complete: function () {
+                        $(this).attr('disabled', false).removeClass('a-disabled');
+                    },
+                    success: function (res) {
+                        px.ajax.interceptor(res, function () {
+                            getRecaptchaToken();
+                        });
+                        location.href = res.Data.RedirectUrl;
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert(textStatus);
+                    }
+
+                })
+            });
+        }
+        
+    </script>
+}
+

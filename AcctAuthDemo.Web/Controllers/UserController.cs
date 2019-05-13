@@ -11,16 +11,28 @@ namespace AcctAuthDemo.Web.Controllers
     /// </summary>
     public class UserController : Controller
     {
+        /// <summary>
+        /// 登录页面
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
+        /// <summary>
+        /// 进行登录
+        /// </summary>
+        /// <param name="name">登录名</param>
+        /// <param name="password">密码</param>
+        /// <param name="deviceId">设备Id</param>
+        /// <param name="deviceName">设备名</param>
+        /// <returns></returns>
         [HttpPost]
-        public IActionResult Login(string name, string password)
+        public IActionResult Login(string name, string password, string deviceId, string deviceName)
         {
-            return View();
+            return Json(null);
         }
     }
 }
