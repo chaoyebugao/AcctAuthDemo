@@ -1,9 +1,9 @@
 ﻿
 @{
-    ViewData["Title"] = "登录";
+    ViewData["Title"] = "注册";
 }
 
-<h2>登录</h2>
+<h2>注册</h2>
 
 <div class="wrap-p50">
 
@@ -16,26 +16,47 @@
     </div>
 
     <div class="form-group">
-        <button class="btn btn-default" id="login">登录</button>
-        <a href="/User/Register">注册</a>
+        <input class="form-control" id="confirmPassword" name="confirmPassword" type="password" placeholder="确认密码" />
+    </div>
+
+    <div class="form-group">
+        <button class="btn btn-default" id="reg">注册</button>
+        <a href="/User/Login">登录</a>
     </div>
 </div>
 
 @section Scripts{
     <script type="text/javascript">
         $(function () {
-            loginLst();
+            regLst();
         });
 
-        function loginLst() {
-            $('#login').click(function () {
+        function regLst() {
+            $('#reg').click(function () {
+                var name = $('#name').val();
+                if (!name) {
+                    return alert('请输入用户名');
+                }
+
+                var pw = $('#password').val();
+                if (!pw) {
+                    return alert('请输入密码');
+                }
+                if (pw.length <= 5) {
+                    return alert('密码至少6位');
+                }
+                var cfPw = $('#confirmPassword').val();
+                if (cfPw != pw) {
+                    return alert('确认密码不一致');
+                }
+
                 var deviceInfo = px.device.getDeviceInfo();
                 $.ajax({
-                    url: '@Url.Action("Login")',
+                    url: '@Url.Action("Register")',
                     type: 'post',
                     data: {
-                        name: $('#name').val(),
-                        password: $('#password').val(),
+                        name: name,
+                        password: pw,
                         deviceId: deviceInfo.id,
                         deviceName: deviceInfo.name,
                     },
@@ -49,6 +70,7 @@
                     },
                     success: function (res) {
                         px.ajax.interceptor(res, function () {
+                            
                         });
                         location.href = res.Data.RedirectUrl;
                     },

@@ -62,6 +62,32 @@ namespace AcctAuthDemo.Data.Repositories
         }
 
         /// <summary>
+        /// 获取判断插入语句，排除主键Id
+        /// </summary>
+        /// <param name="conditions">判断条件</param>
+        /// <returns></returns>
+        protected string GetConditionalInsertBeginSql(string conditions)
+        {
+            return GetConditionalInsertBeginSql(conditions, "Id");
+        }
+
+        /// <summary>
+        /// 获取判断插入语句
+        /// </summary>
+        /// <param name="conditions">判断条件</param>
+        /// <param name="excludeFields"></param>
+        /// <returns></returns>
+        protected string GetConditionalInsertBeginSql(string conditions, params string[] excludeFields)
+        {
+            var fs = Fields.ToList();
+            fs.RemoveAll(m => excludeFields.Contains(m, StringComparer.OrdinalIgnoreCase));
+
+            return $@"INSERT INTO {TableName} ({string.Join(", ", fs)}) SELECT @{string.Join(", @", fs)} FROM DUAL WHERE NOT EXISTS (
+    SELECT 1 FROM {TableName} WHERE IsDeleted = 0 AND {conditions}
+)";
+        }
+
+        /// <summary>
         /// 创建自增类型记录并返回新建记录的主键
         /// </summary>
         /// <typeparam name="TKey">主键类型</typeparam>

@@ -92,17 +92,17 @@ WHERE IsDeleted = 0 AND UserId = @UserId AND DeviceId = @DeviceId
         /// <param name="userId">用户Id</param>
         /// <param name="deviceId">设备Id</param>
         /// <returns></returns>
-        public int Delete(int userId)
+        public int Delete(string token)
         {
             using (var conn = new MySqlConnection(dbConfig.ConnectionString))
             {
                 var dps = new DynamicParameters();
                 dps.Add("Now", DateTime.Now);
-                dps.Add("UserId", userId);
+                dps.Add("Token", token);
 
                 var sql = $@"
 UPDATE {TableName} SET UpdateAt = @Now, IsDeleted = 1
-WHERE IsDeleted = 0 AND UserId = @UserId
+WHERE IsDeleted = 0 AND Token = @Token
 ";
                 return conn.Execute(sql, dps);
             }

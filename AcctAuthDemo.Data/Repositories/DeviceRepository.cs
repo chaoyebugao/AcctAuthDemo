@@ -23,16 +23,11 @@ namespace AcctAuthDemo.Data.Repositories
         /// <param name="deviceId">设备Id</param>
         /// <param name="deviceName">设备名</param>
         /// <returns></returns>
-        public int Upsert(string deviceId, string deviceName)
+        public int CreateByDeviceId(string deviceId, string deviceName)
         {
             using (var conn = new MySqlConnection(dbConfig.ConnectionString))
             {
-                var sql = $@"
-IF EXISTS (SELECT 1 FROM {TableName} WHERE IsDeleted = 0 AND DeviceId = @DeviceId)
-BEGIN
-    {InsertSql}
-END
-";
+                var sql = GetConditionalInsertBeginSql("DeviceId = @DeviceId");
                 return conn.Execute(sql, new Device()
                 {
                     CreateAt = DateTime.Now,

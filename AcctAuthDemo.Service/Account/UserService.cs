@@ -34,15 +34,23 @@ namespace AcctAuthDemo.Service.Account
         /// <param name="inputPassword">密码</param>
         /// <param name="deviceId">设备Id</param>
         /// <param name="deviceName">设备名</param>
-        public void Register(string name, string inputPassword, string deviceId, string deviceName)
+        public (string endpointToken, DateTime expireAt) Register(string name, string inputPassword, string deviceId, string deviceName,
+            string ip = null)
         {
-            userRepository.Create(new User()
+            if (userRepository.NameExists(name))
+            {
+                throw new ErrorException(ErrorCodes.UserOptFail, "已存在的登录名");
+            }
+
+            var userId = userRepository.Create(new User()
             {
                 CreateAt = DateTime.Now,
                 Name = name,
                 Password = HashPassword(name, inputPassword),
                 UpdateAt = DateTime.Now,
             });
+
+            return Authorize(name, inputPassword, deviceId, deviceName, ip);
         }
 
         private string HashPassword(string name, string inputPassword)
@@ -50,7 +58,7 @@ namespace AcctAuthDemo.Service.Account
             return HashUtil.CreateHmacSha256Hash(name, inputPassword);
         }
 
-        public (string endpointToken, DateTime expireAt, long userId, long loginTokenId) Authorize(
+        public (string endpointToken, DateTime expireAt) Authorize(
             string name, string inputPassword, string deviceId, string deviceName, string ip = null)
         {
             if (string.IsNullOrEmpty(deviceId))
@@ -87,9 +95,9 @@ namespace AcctAuthDemo.Service.Account
 
             loginToken.Id = loginTokenRepository.Create(loginToken);
 
-            deviceRepository.Upsert(deviceId, deviceName);
+            deviceRepository.CreateByDeviceId(deviceId, deviceName);
 
-            return (endpointToken, loginToken.ExpireAt, user.Id, loginToken.Id);
+            return (endpointToken, loginToken.ExpireAt);
         }
 
         /// <summary>
@@ -140,6 +148,16 @@ namespace AcctAuthDemo.Service.Account
 
             return (userId.Value, ErrorCodes.Success, null);
         }
-
+        
+        /// <summary>
+        /// 撤销授权
+        /// </summary>
+        /// <param name="endpointToken">终端票据</param>
+        /// <param name="deviceId">设备Id</param>
+        public void Unauthorize(string endpointToken, string deviceId)
+        {
+            var dbToken = BuildDatabaseToken(endpointToken, deviceId);
+            loginTokenRepository.Delete(dbToken);
+        }
     }
 }

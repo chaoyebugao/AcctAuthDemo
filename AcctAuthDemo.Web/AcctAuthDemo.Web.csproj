@@ -15,4 +15,10 @@
     <ProjectReference Include="..\AcctAuthDemo.Service\AcctAuthDemo.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\User\Register.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
 </Project>

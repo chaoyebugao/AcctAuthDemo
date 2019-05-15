@@ -36,5 +36,23 @@ namespace AcctAuthDemo.Data.Repositories
             }
         }
 
+        /// <summary>
+        /// 登录名是否已存在
+        /// </summary>
+        /// <param name="name">用户名</param>
+        /// <returns></returns>
+        public bool NameExists(string name)
+        {
+            using (var conn = new MySqlConnection(dbConfig.ConnectionString))
+            {
+                var sql = $@"SELECT COUNT(1) FROM {TableName} WHERE IsDeleted = 0 AND Name = @Name";
+                var dps = new DynamicParameters();
+                dps.Add("Name", name);
+
+                var count = conn.QueryFirstOrDefault<int>(sql, dps);
+                return count > 0;
+            }
+        }
+
     }
 }
