@@ -47,7 +47,7 @@ namespace AcctAuthDemo.Web.Filters
                 return;
             }
 
-            var (userId, errCode, errMsg) = userService.Valid(token, deviceId);
+            var (errCode, errMsg) = userService.Valid(token, deviceId);
             if (errCode != ErrorCodes.Success)
             {
                 //令牌失效

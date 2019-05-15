@@ -11,16 +11,15 @@ namespace AcctAuthDemo.Web.Controllers
 {
     public class HomeController : Controller
     {
+        /// <summary>
+        /// 验证页面
+        /// </summary>
+        /// <returns></returns>
         [ServiceFilter(typeof(CheckLoginTokenActionFilterAttribute))]
         public IActionResult Index()
         {
             return View();
         }
         
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

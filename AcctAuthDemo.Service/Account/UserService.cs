@@ -132,21 +132,26 @@ namespace AcctAuthDemo.Service.Account
         /// <param name="endpointToken">终端票据</param>
         /// <param name="deviceId">设备Id</param>
         /// <returns></returns>
-        public (long userId, ErrorCodes errCode, string errMsg) Valid(string endpointToken, string deviceId)
+        public (ErrorCodes errCode, string errMsg) Valid(string endpointToken, string deviceId)
         {
             if (string.IsNullOrEmpty(endpointToken))
             {
-                return (0, ErrorCodes.InvalidLoginToken, "请重新进行登录");
+                return (ErrorCodes.InvalidLoginToken, "请重新进行登录");
+            }
+            if (string.IsNullOrEmpty(deviceId))
+            {
+                return (ErrorCodes.InvalidLoginToken, "请重新进行登录");
             }
 
             var dbToken = BuildDatabaseToken(endpointToken, deviceId);
             var userId = loginTokenRepository.FindUser(dbToken, deviceId);
             if (userId == null)
             {
-                return (0, ErrorCodes.InvalidLoginToken, "请重新进行登录");
+                return (ErrorCodes.InvalidLoginToken, "请重新进行登录");
             }
 
-            return (userId.Value, ErrorCodes.Success, null);
+            //验证通过
+            return (ErrorCodes.Success, null);
         }
         
         /// <summary>

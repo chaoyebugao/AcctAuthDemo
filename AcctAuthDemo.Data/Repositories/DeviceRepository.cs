@@ -18,7 +18,7 @@ namespace AcctAuthDemo.Data.Repositories
         }
 
         /// <summary>
-        /// 根据设别Id更新/插入
+        /// 根据设备Id更新/插入
         /// </summary>
         /// <param name="deviceId">设备Id</param>
         /// <param name="deviceName">设备名</param>
