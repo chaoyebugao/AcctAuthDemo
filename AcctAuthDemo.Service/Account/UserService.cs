@@ -78,7 +78,7 @@ namespace AcctAuthDemo.Service.Account
                 throw new ErrorException(ErrorCodes.UserOptFail, "用户名或密码错误");
             }
 
-            var endpointToken = BuildEndpointToken(user.Id, name, inputPassword);
+            var endpointToken = BuildEndpointToken(user.Id, name);
 
             var dbToken = BuildDatabaseToken(endpointToken, deviceId);
 
@@ -104,12 +104,12 @@ namespace AcctAuthDemo.Service.Account
         /// 构建终端票据
         /// </summary>
         /// <param name="userId">用户Id</param>
-        /// <param name="name">名称</param>
-        /// <param name="inputPassword">用户输入的密码</param>
+        /// <param name="name">用户名</param>
         /// <returns></returns>
-        private string BuildEndpointToken(long userId, string name, string inputPassword)
+        private string BuildEndpointToken(long userId, string name)
         {
-            var input = $"{userId}{Guid.NewGuid().ToString("N")}{name}{inputPassword}";
+            //这里别加进敏感信息（如密码），哈希虽然不可逆而且很难暴力破解，但还是有丁点可能的
+            var input = $"{userId}{Guid.NewGuid().ToString("N")}{name}";
             var hashPw = HashUtil.CreateSha512Hash(input);
             return hashPw;
         }
